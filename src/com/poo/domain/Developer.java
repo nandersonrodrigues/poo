@@ -1,6 +1,7 @@
 package com.poo.domain;
 
 import java.util.LinkedHashSet;
+import java.util.Optional;
 import java.util.Set;
 
 public class Developer {
@@ -19,12 +20,27 @@ public class Developer {
     }
 
     public void subscribeToBootcamp(Bootcamp bootcamp) {
+        this.subscribedContents.addAll(bootcamp.getContents());
+        bootcamp.getDevsSubscription().add(this);
     }
 
     public void progress() {
+        Optional<Content> content = this.subscribedContents.stream().findFirst();
+
+        if (content.isPresent()) {
+            this.finishedContents.add(content.get());
+            this.subscribedContents.remove(content.get());
+        } else {
+            System.err.println("No subscriptions!");
+        }
     }
 
-    public void calculateTotalXP() {
+    public double calculateTotalXP() {
+
+        return this.finishedContents
+                .stream()
+                .mapToDouble(content -> content.calculateXP())
+                .sum();
     }
 
     public String getName() {
